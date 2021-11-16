@@ -81,7 +81,10 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(!res.isAfterLast()){
+            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COULUMN_ID)));
             contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_NAME)));
+            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_FIRSTNAME)));
+            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));
             res.moveToNext();
         }
         res.close();

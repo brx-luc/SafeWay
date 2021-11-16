@@ -29,9 +29,9 @@ public class AddNumberActivity extends AppCompatActivity {
 
     public void saveToDB(View v){
         db = new DBHelper(this);
-        String nameString = (String) name.getText();
-        String firstnameString = (String) firstname.getText();
-        String phone = (String) phonenumber.getText();
+        String nameString = name.getText().toString();
+        String firstnameString = firstname.getText().toString();
+        String phone = phonenumber.getText().toString();
         db.insertContact(nameString, firstnameString, phone);
     }
 }
