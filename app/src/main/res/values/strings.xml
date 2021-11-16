@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SafeWay</string>
+    <string name="safeway">SafeWay</string>
+    <string name="shake">Shake your phone to share your location</string>
+    <string name="lastText">I arrived safely</string>
+    <string name="add_number">Add number</string>
+    <string name="edit_numbers">Edit numbers</string>
+    <string name="name">Name</string>
+    <string name="firstname">Firstname</string>
+    <string name="phone_number">Phone number</string>
+    <string name="save">save</string>
+    <string name="addName">Name</string>
+    <string name="addFirstname">Firstname</string>
+    <string name="addPhone_number">Phone number</string>
+</resources>
