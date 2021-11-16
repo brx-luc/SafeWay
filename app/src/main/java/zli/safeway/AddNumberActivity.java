@@ -2,6 +2,8 @@ package zli.safeway;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -33,5 +35,8 @@ public class AddNumberActivity extends AppCompatActivity {
         String firstnameString = firstname.getText().toString();
         String phone = phonenumber.getText().toString();
         db.insertContact(nameString, firstnameString, phone);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

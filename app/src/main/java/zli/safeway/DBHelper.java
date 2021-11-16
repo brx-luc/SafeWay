@@ -75,16 +75,20 @@ public class DBHelper extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<String> getAllContacts(){
         ArrayList<String> contactList = new ArrayList<>();
-
+        Contact c = new Contact(CONTACTS_COULUMN_ID, CONTACTS_COLUMN_NAME, CONTACTS_COLUMN_FIRSTNAME,CONTACTS_COLUMN_PHONENUMBER);
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("SELECT * FROM contacts", null);
         res.moveToFirst();
 
         while(!res.isAfterLast()){
-            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COULUMN_ID)));
+            /*contactList.add(res.getString(res.getColumnIndex(CONTACTS_COULUMN_ID)));
             contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_NAME)));
             contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_FIRSTNAME)));
-            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));
+            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));*/
+            contactList.add(res.getString(res.getColumnIndex(c.getId())));
+            contactList.add(res.getString(res.getColumnIndex(c.getName())));
+            contactList.add(res.getString(res.getColumnIndex(c.getFirstname())));
+            contactList.add(res.getString(res.getColumnIndex(c.getPhonenumber())));
             res.moveToNext();
         }
         res.close();
