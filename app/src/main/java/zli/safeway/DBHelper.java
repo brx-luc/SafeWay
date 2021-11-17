@@ -95,4 +95,18 @@ public class DBHelper extends SQLiteOpenHelper {
         return contactList;
 
     }
+
+    @SuppressLint("Range")
+    public ArrayList<String> getAllNumber(){
+        ArrayList<String> contactNumbers = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor res = db.rawQuery("SELECT phonenumber FROM contacts", null);
+        res.moveToFirst();
+
+        while(!res.isAfterLast()){
+            contactNumbers.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));
+        }
+        res.close();
+        return contactNumbers;
+    }
 }
