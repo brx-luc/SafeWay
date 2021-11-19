@@ -30,6 +30,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -43,6 +44,7 @@
                 android:layout_height="match_parent">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/firstname"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -55,6 +57,7 @@
                     android:layout_height="match_parent">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="30dp"
@@ -80,6 +83,16 @@
                 android:layout_marginTop="20dp"
                 android:backgroundTint="#d4ffff"
                 android:text="Save"
+                android:textColor="#000000"
+                android:onClick ="updateContact"/>
+
+            <Button
+                android:id="@+id/cancelUpdateButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="#d4ffff"
+                android:text="Cancel"
                 android:textColor="#000000" />
         </LinearLayout>
 

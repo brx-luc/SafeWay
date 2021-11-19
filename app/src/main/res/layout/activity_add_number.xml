@@ -85,6 +85,15 @@
                 android:text="Save"
                 android:textColor="#000000"
                 android:onClick="saveToDB"/>
+
+            <Button
+                android:id="@+id/cancelAddButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:backgroundTint="#d4ffff"
+                android:text="Cancel"
+                android:textColor="#000000" />
         </LinearLayout>
 
     </LinearLayout>

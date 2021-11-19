@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             currentAccelerator = (float) Math.sqrt((double) (x * x + y * y + z * z));
             float delta = currentAccelerator - lastAccelerator;
             accelerator = accelerator * 0.9f + delta + 0.1f;
-            if (accelerator > 12) {
+            if (accelerator > 2) {
                 View root = view.getRootView();
                 root.setBackgroundColor(Color.LTGRAY);
                 usage.setText("Location is being shared");
