@@ -22,6 +22,7 @@ public class EditNumberActivity extends AppCompatActivity {
 
     private Button editButton;
     private Button deleteButton;
+    private Button cancelButton;
     private DBHelper db;
     private Integer id;
     private TableLayout table;
@@ -38,6 +39,7 @@ public class EditNumberActivity extends AppCompatActivity {
 
         editButton = findViewById(R.id.editButton);
         deleteButton = findViewById(R.id.deleteButton);
+        cancelButton = findViewById(R.id.cancelEditButton);
         table = findViewById(R.id.table);
         table.setStretchAllColumns(true);
         fillTable();
@@ -108,6 +110,11 @@ public class EditNumberActivity extends AppCompatActivity {
                 break;
         }
 
+    }
+
+    public void cancelEdit(View v){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

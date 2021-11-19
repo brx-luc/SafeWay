@@ -17,6 +17,7 @@ import java.util.Objects;
 public class UpdateNumberActivity extends AppCompatActivity {
 
     private Button saveButton;
+    private Button cancelButton;
     private TextInputEditText name;
     private TextInputEditText firstname;
     private TextInputEditText phonenumber;
@@ -34,6 +35,7 @@ public class UpdateNumberActivity extends AppCompatActivity {
         setContentView(R.layout.activity_update_number);
 
         Intent intent = getIntent();
+        cancelButton = findViewById(R.id.cancelUpdateButton);
         nameString = intent.getStringExtra("name");
         firstnameString = intent.getStringExtra("firstname");
         phoneString = intent.getStringExtra("phone");
@@ -54,6 +56,11 @@ public class UpdateNumberActivity extends AppCompatActivity {
         db.updateContact(id, Objects.requireNonNull(name.getText()).toString(), Objects.requireNonNull(firstname.getText()).toString(), Objects.requireNonNull(phonenumber.getText()).toString());
 
         Intent intent = new Intent(this, EditNumberActivity.class);
+        startActivity(intent);
+    }
+
+    public void cancelUpdate(View v){
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 

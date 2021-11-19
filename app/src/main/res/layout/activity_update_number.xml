@@ -93,7 +93,8 @@
                 android:layout_marginTop="50dp"
                 android:backgroundTint="#d4ffff"
                 android:text="Cancel"
-                android:textColor="#000000" />
+                android:textColor="#000000"
+                android:onClick="cancelUpdate"/>
         </LinearLayout>
 
     </LinearLayout>
