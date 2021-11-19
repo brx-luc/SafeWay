@@ -21,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CONTACTS_COLUMN_NAME = "name";
     public static final String CONTACTS_COLUMN_FIRSTNAME = "firstname";
     public static final String CONTACTS_COLUMN_PHONENUMBER ="phonenumber";
+
     //private HashMap hp;
 
     public DBHelper(Context context) {
@@ -105,6 +106,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         while(!res.isAfterLast()){
             contactNumbers.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));
+            res.moveToNext();
         }
         res.close();
         return contactNumbers;

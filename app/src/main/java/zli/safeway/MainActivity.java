@@ -19,6 +19,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.telephony.SmsManager;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private SensorManager sensorManager;
     private Button editButton;
     private Button addButton;
+    private Button finish;
     private float accelerator;
     private float currentAccelerator;
     private float lastAccelerator;
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private String phoneNo;
     private String message;
 
+    DBHelper db = new DBHelper(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         editButton = findViewById(R.id.editButton1);
         addButton = findViewById(R.id.addButton1);
+        finish = findViewById(R.id.finishButton);
         view = findViewById(R.id.parent);
         usage = findViewById(R.id.usage);
 
@@ -172,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-                //init();
                 sendSMS();
 
             }
@@ -186,6 +190,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendSMS(){
 
+        DBHelper db = new DBHelper(this);
+        ArrayList<String> data = db.getAllNumber();
+
         if(currentLocation != null){
             latitude = currentLocation.getLatitude();
             longitude = currentLocation.getLongitude();
@@ -194,22 +201,49 @@ public class MainActivity extends AppCompatActivity {
         message = "lat: "+ latitude +", long:" + longitude;
 
         Toast.makeText(this, message , Toast.LENGTH_LONG).show();
+        for(int i = 0; i < data.size(); i++){
+            phoneNo = data.get(i);
+            Toast.makeText(getApplicationContext(), phoneNo,
+                    Toast.LENGTH_SHORT).show();
+            try{
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("smsto: "));
+                intent.setType("vnd.android-dir/mms-sms");
+                intent.putExtra("address", phoneNo);
+                intent.putExtra("sms_body", message);
+                startActivity(Intent.createChooser(intent, "Send sms via:"));
+            }catch(Exception e){
 
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
+            }
+
+            /*if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)){
                     Toast.makeText(this, "Test", Toast.LENGTH_LONG).show();
+                    SmsManager smsManager = SmsManager.getDefault();
+
+                    for(int i = 0; i < data.size(); i++){
+                        phoneNo = data.get(i);
+                        smsManager.sendTextMessage(phoneNo, null, message, null, null);
+                        Toast.makeText(getApplicationContext(), "SMS Sent!",
+                                Toast.LENGTH_LONG).show();
+                    }
 
                 }else{
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SEND_SMS);
                 }
-        }
-    }
+
+
+        }*/
+
+
+
+    }}
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        DBHelper db = new DBHelper(this);
+        /*DBHelper db = new DBHelper(this);
         ArrayList<String> data = db.getAllNumber();
 
         switch (requestCode){
@@ -226,18 +260,40 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-        }
+        }*/
 
     }
     public void stopLocationUpdates(View v){
         fusedLocationProviderClient.removeLocationUpdates(locationCallback).addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
+
                 Toast.makeText(getApplicationContext(), "Location updates stopped!",
                         Toast.LENGTH_SHORT).show();
                 View root = view.getRootView();
                 root.setBackgroundColor(Color.WHITE);
                 usage.setText("Shake your phone to share your location");
+                ArrayList<String> data = db.getAllNumber();
+
+                for(int i = 0; i < data.size(); i++){
+                    phoneNo = data.get(i);
+                    Toast.makeText(getApplicationContext(), phoneNo,
+                            Toast.LENGTH_SHORT).show();
+                    try{
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse("smsto: "));
+                        intent.setType("vnd.android-dir/mms-sms");
+                        intent.putExtra("address", phoneNo);
+                        intent.putExtra("sms_body", "I arrived safely");
+                        startActivity(Intent.createChooser(intent, "Send sms via:"));
+                    }catch(Exception e){
+
+                    }
+
+                    //smsManager.sendTextMessage(phoneNo, null, "I arrived safely", null, null);
+
+                }
+
             }
         });
     }
