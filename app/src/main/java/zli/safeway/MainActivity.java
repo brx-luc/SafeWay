@@ -4,16 +4,17 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.media.audiofx.Equalizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
@@ -22,8 +23,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -38,6 +37,14 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import com.karumi.dexter.Dexter;
+import com.karumi.dexter.PermissionToken;
+import com.karumi.dexter.listener.PermissionDeniedResponse;
+import com.karumi.dexter.listener.PermissionGrantedResponse;
+import com.karumi.dexter.listener.PermissionRequest;
+import com.karumi.dexter.listener.single.PermissionListener;
+
+import java.net.URI;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -55,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_LOCATION = 1;
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 300000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 100000;
     private static final int REQUEST_CHECK_SETTINGS = 100;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -80,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        //acceleratorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         accelerator = 0.00f;
         currentAccelerator = SensorManager.GRAVITY_EARTH;
@@ -107,11 +113,30 @@ public class MainActivity extends AppCompatActivity {
             currentAccelerator = (float) Math.sqrt((double) (x * x + y * y + z * z));
             float delta = currentAccelerator - lastAccelerator;
             accelerator = accelerator * 0.9f + delta + 0.1f;
-            if (accelerator > 9) {
+            if (accelerator > 2) {
                 View root = view.getRootView();
                 root.setBackgroundColor(Color.LTGRAY);
                 usage.setText("Location is being shared");
-                startLocationUpdates();
+                Dexter.withActivity(MainActivity.this).withPermission(Manifest.permission.ACCESS_FINE_LOCATION).withListener(new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                        requestinLocationUpdates = true;
+                        startLocationUpdates();
+                    }
+
+                    @Override
+                    public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
+                        if(permissionDeniedResponse.isPermanentlyDenied()){
+                            openSettings();
+                        }
+                    }
+
+                    @Override
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) {
+                        permissionToken.continuePermissionRequest();
+
+                    }
+                }).check();
 
             }
         }
@@ -196,66 +221,19 @@ public class MainActivity extends AppCompatActivity {
 
         }
         message = "lat: "+ latitude +", long:" + longitude;
+        SmsManager smsManager = SmsManager.getDefault();
 
-        //Toast.makeText(this, message , Toast.LENGTH_LONG).show();
-        /*for(int i = 0; i < data.size(); i++){
-            phoneNo = data.get(i);
-            try{
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("smsto: "));
-                intent.setType("vnd.android-dir/mms-sms");
-                intent.putExtra("address", phoneNo);
-                intent.putExtra("sms_body", message);
-                startActivity(Intent.createChooser(intent, "Send sms via:"));
-            }catch(Exception e){
-
-            }*/
-
-            /*if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
-                if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)){
-                    Toast.makeText(this, "Test", Toast.LENGTH_LONG).show();*/
-                    SmsManager smsManager = SmsManager.getDefault();
-
-                    for(int i = 0; i < data.size(); i++){
-                        phoneNo = data.get(i);
-                        smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                        /*Toast.makeText(getApplicationContext(), "SMS Sent!",
-                                Toast.LENGTH_LONG).show();*/
-                    }
-
-                /*}else{
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SEND_SMS);
-                }*/
-
-
-
-
-
-
+            for(int i = 0; i < data.size(); i++){
+                phoneNo = data.get(i);
+                smsManager.sendTextMessage(phoneNo, null, message, null, null);
+                Toast.makeText(getApplicationContext(), message,
+                        Toast.LENGTH_SHORT).show();
+            }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        /*DBHelper db = new DBHelper(this);
-        ArrayList<String> data = db.getAllNumber();
-
-        switch (requestCode){
-            case MY_PERMISSIONS_REQUEST_SEND_SMS:{
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    SmsManager smsManager = SmsManager.getDefault();
-
-                    for(int i = 0; i < data.size(); i++){
-                        phoneNo = data.get(i);
-                        smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                        Toast.makeText(getApplicationContext(), "SMS Sent!",
-                                Toast.LENGTH_LONG).show();
-                    }
-
-                }
-            }
-        }*/
 
     }
     public void stopLocationUpdates(View v){
@@ -271,23 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 usage.setText("Shake your phone to share your location");
                 ArrayList<String> data = db.getAllNumber();
 
-                /*for(int i = 0; i < data.size(); i++){
-                    phoneNo = data.get(i);
-                    try{
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("smsto: "));
-                        intent.setType("vnd.android-dir/mms-sms");
-                        intent.putExtra("address", phoneNo);
-                        intent.putExtra("sms_body", "I arrived safely");
-                        startActivity(Intent.createChooser(intent, "Send sms via:"));
-                    }catch(Exception e){
-
-                    }
-
-
-
-                }*/
-
                 for(int i = 0; i < data.size(); i++) {
                     phoneNo = data.get(i);
                     smsManager.sendTextMessage(phoneNo, null, "I arrived safely", null, null);
@@ -296,5 +257,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void openSettings(){
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+
 
 }

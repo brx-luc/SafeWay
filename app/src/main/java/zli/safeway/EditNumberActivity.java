@@ -87,7 +87,6 @@ public class EditNumberActivity extends AppCompatActivity {
                         name = data.get(4 * finalI + 1);
                         firstname = data.get(4 * finalI + 2);
                         phone = data.get(4 * finalI + 3);
-                        Toast.makeText(getApplicationContext(), " "+firstname+ " ", Toast.LENGTH_SHORT).show();
                         return false;
                     }
                 });

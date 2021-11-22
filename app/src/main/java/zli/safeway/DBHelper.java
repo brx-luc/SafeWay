@@ -22,8 +22,6 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String CONTACTS_COLUMN_FIRSTNAME = "firstname";
     public static final String CONTACTS_COLUMN_PHONENUMBER ="phonenumber";
 
-    //private HashMap hp;
-
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
@@ -82,10 +80,6 @@ public class DBHelper extends SQLiteOpenHelper {
         res.moveToFirst();
 
         while(!res.isAfterLast()){
-            /*contactList.add(res.getString(res.getColumnIndex(CONTACTS_COULUMN_ID)));
-            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_NAME)));
-            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_FIRSTNAME)));
-            contactList.add(res.getString(res.getColumnIndex(CONTACTS_COLUMN_PHONENUMBER)));*/
             contactList.add(res.getString(res.getColumnIndex(c.getId())));
             contactList.add(res.getString(res.getColumnIndex(c.getName())));
             contactList.add(res.getString(res.getColumnIndex(c.getFirstname())));
