@@ -1,13 +1,7 @@
 package zli.safeway;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,8 +11,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -27,6 +19,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -42,7 +39,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_LOCATION = 1;
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 300000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 1000;
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final int REQUEST_CHECK_SETTINGS = 100;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -111,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             currentAccelerator = (float) Math.sqrt((double) (x * x + y * y + z * z));
             float delta = currentAccelerator - lastAccelerator;
             accelerator = accelerator * 0.9f + delta + 0.1f;
-            if (accelerator > 2) {
+            if (accelerator > 9) {
                 View root = view.getRootView();
                 root.setBackgroundColor(Color.LTGRAY);
                 usage.setText("Location is being shared");
@@ -188,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("IntentReset")
     private void sendSMS(){
 
         DBHelper db = new DBHelper(this);
@@ -200,11 +197,9 @@ public class MainActivity extends AppCompatActivity {
         }
         message = "lat: "+ latitude +", long:" + longitude;
 
-        Toast.makeText(this, message , Toast.LENGTH_LONG).show();
-        for(int i = 0; i < data.size(); i++){
+        //Toast.makeText(this, message , Toast.LENGTH_LONG).show();
+        /*for(int i = 0; i < data.size(); i++){
             phoneNo = data.get(i);
-            Toast.makeText(getApplicationContext(), phoneNo,
-                    Toast.LENGTH_SHORT).show();
             try{
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("smsto: "));
@@ -214,30 +209,30 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(intent, "Send sms via:"));
             }catch(Exception e){
 
-            }
+            }*/
 
             /*if(ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED){
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)){
-                    Toast.makeText(this, "Test", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Test", Toast.LENGTH_LONG).show();*/
                     SmsManager smsManager = SmsManager.getDefault();
 
                     for(int i = 0; i < data.size(); i++){
                         phoneNo = data.get(i);
                         smsManager.sendTextMessage(phoneNo, null, message, null, null);
-                        Toast.makeText(getApplicationContext(), "SMS Sent!",
-                                Toast.LENGTH_LONG).show();
+                        /*Toast.makeText(getApplicationContext(), "SMS Sent!",
+                                Toast.LENGTH_LONG).show();*/
                     }
 
-                }else{
+                /*}else{
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, MY_PERMISSIONS_REQUEST_SEND_SMS);
-                }
-
-
-        }*/
+                }*/
 
 
 
-    }}
+
+
+
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -265,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void stopLocationUpdates(View v){
         fusedLocationProviderClient.removeLocationUpdates(locationCallback).addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @SuppressLint("IntentReset")
             @Override
             public void onComplete(@NonNull Task<Void> task) {
 
@@ -275,10 +271,8 @@ public class MainActivity extends AppCompatActivity {
                 usage.setText("Shake your phone to share your location");
                 ArrayList<String> data = db.getAllNumber();
 
-                for(int i = 0; i < data.size(); i++){
+                /*for(int i = 0; i < data.size(); i++){
                     phoneNo = data.get(i);
-                    Toast.makeText(getApplicationContext(), phoneNo,
-                            Toast.LENGTH_SHORT).show();
                     try{
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse("smsto: "));
@@ -290,8 +284,13 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
-                    //smsManager.sendTextMessage(phoneNo, null, "I arrived safely", null, null);
 
+
+                }*/
+
+                for(int i = 0; i < data.size(); i++) {
+                    phoneNo = data.get(i);
+                    smsManager.sendTextMessage(phoneNo, null, "I arrived safely", null, null);
                 }
 
             }
